@@ -5,6 +5,8 @@ from PyQt5.QtWidgets import QLabel, QLineEdit, QMainWindow
 from PyQt5.QtGui import QPixmap, QFont
 import sqlite3
 
+# TODO КОМЕНТАРИИ, БЛ@#*!
+
 
 class FirstForm(QMainWindow):
     def __init__(self):
@@ -113,10 +115,11 @@ class FirstForm(QMainWindow):
     def nach(self):
         self.test = 'Природа'
 
-    # def keyPressEvent(self, event):
-    # if event.key() == Qt.Key_Enter:
-    # self.second_form = SecondForm()
-    # self.second_form.show()
+    #def keyPressEvent(self, event):
+        #if event.key() == Qt.Key_Enter:
+            #self.second_form = SecondForm()
+            #self.second_form.show()
+    # TODO согласование с клавиатурой 'enter'
 
     def open_second_form(self):
         ts = self.test
@@ -175,6 +178,12 @@ class SecondForm(QWidget):
         self.image.resize(700, 450)
         self.image.setPixmap(self.pixmap)
 
+        self.pixmap = QPixmap("раздумья")
+        self.image = QLabel(self)
+        self.image.move(40, 140)
+        self.image.resize(250, 150)
+        self.image.setPixmap(self.pixmap)
+
         self.label1 = QLabel(self)
         self.label1.setFont(QFont("Times", 14, QFont.Bold))
         self.label1.setText('И снова здравствуй!')
@@ -206,11 +215,23 @@ class SecondForm(QWidget):
         self.label4.adjustSize()
         self.label4.move(40, 80)
 
+        self.pixmap1 = QPixmap("вопрос0")
+        self.image = QLabel(self)
+        self.image.move(300, 100)
+        self.image.resize(390, 240)
+        self.image.setPixmap(self.pixmap1)
+
         self.label3 = QLabel(self)
         self.label3.setFont(QFont("Times", 11, QFont.Bold))
         self.label3.setText("Ответ:")
         self.label3.adjustSize()
         self.label3.move(40, 100)
+
+        self.label3 = QLabel(self)
+        self.label3.setFont(QFont("Times", 10, QFont.Bold))
+        self.label3.setText("Если не знаете ответ, нажмите NEXT")
+        self.label3.adjustSize()
+        self.label3.move(40, 120)
 
         self.ainput = QLineEdit(self)
         self.ainput.adjustSize()
@@ -223,26 +244,48 @@ class SecondForm(QWidget):
         self.btn1.move(200, 300)
         self.btn1.clicked.connect(self.open_tr_form)
 
+    # TODO 'enter' на клавиатуре
+
     def questh(self):
         self.btn.setText('NEXT')
         self.btn.resize(self.btn.sizeHint())
         a = self.ainput.text()
+
         if not a.isdigit() and a != '':
-            raise ValueError
-        try:
+            self.label4.setText(f"{self.quest[self.num - 1]}")
+            self.label4.adjustSize()
+            self.ainput.setText(f"")
+            self.num += 0
+        elif a == '':
             if self.num < 10:
                 self.label4.setText(f"{self.quest[self.num]}")
                 self.label4.adjustSize()
+                self.pixmap1 = QPixmap("вопрос" + str(self.num + 1))
+                self.image.setPixmap(self.pixmap1)
             else:
                 self.label4.setText(f"Всё)")
                 self.label4.adjustSize()
+                self.pixmap1 = QPixmap("вопрос11")
+                self.image.setPixmap(self.pixmap1)
+            self.num += 1
+            self.ainput.setText(f"")
+            self.answers.append(str(0))
+        else:
+            if self.num < 10:
+                self.label4.setText(f"{self.quest[self.num]}")
+                self.label4.adjustSize()
+                self.pixmap1 = QPixmap("вопрос" + str(self.num + 1))
+                self.image.setPixmap(self.pixmap1)
+            else:
+                self.label4.setText(f"Всё)")
+                self.label4.adjustSize()
+                self.pixmap1 = QPixmap("вопрос11")
+                self.image.setPixmap(self.pixmap1)
             self.num += 1
             self.ainput.setText(f"")
             self.answers.append(a)
-        except ValueError:
-            self.label4.setText(f"{self.quest[self.num]}")
-            self.label4.adjustSize()
-            self.ainput.setText(f"")
+
+
 
     def open_tr_form(self):
         self.tr_form = TrForm(self.answers, self.answ)
@@ -256,6 +299,12 @@ class TrForm(QWidget):
         self.answw = b
         self.itt = a
         self.n = 0
+        for i in range(len(self.answw)):
+            if int(self.answw[i]) == int(self.itt[i + 1]):
+                self.n += 1
+            else:
+                self.n = self.n
+        self.n *= 10
 
     def initUI(self):
         self.setGeometry(600, 200, 400, 350)
@@ -294,14 +343,34 @@ class TrForm(QWidget):
         self.label2.adjustSize()
         self.label2.move(40, 100)
 
+        self.label3 = QLabel(self)
+        self.label3.setFont(QFont("Times", 10, QFont.Bold))
+        self.label3.setText(f" ")
+        self.label3.adjustSize()
+        self.label3.move(40, 120)
+
+        self.label4 = QLabel(self)
+        self.label4.setFont(QFont("Times", 10, QFont.Bold))
+        self.label4.setText(f" ")
+        self.label4.adjustSize()
+        self.label4.move(40, 140)
+
     def itg(self):
-        for i in range(len(self.answw)):
-            if int(self.answw[i]) == int(self.itt[i]):
-                self.n += 1
-        self.n *= 10
         vv = str(self.n) + '%'
         self.label2.setText(f"{vv}")
         self.label2.adjustSize()
+
+        self.label3.setText(f"Правильно/ответ")
+        self.label3.adjustSize()
+
+        innnn = ''
+        for i in range(len(self.answw)):
+            innnn += f'{self.answw[i]}\t{self.itt[i + 1]}\n'
+        self.label4.setText(f"{innnn}")
+        self.label4.adjustSize()
+
+
+    # TODO написать вывод общих результатов
 
 
 if __name__ == '__main__':

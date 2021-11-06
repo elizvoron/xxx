@@ -4,7 +4,6 @@ from PyQt5.QtWidgets import QApplication, QWidget, QPushButton
 from PyQt5.QtWidgets import QLabel, QLineEdit, QMainWindow
 from PyQt5.QtGui import QPixmap, QFont
 import sqlite3
-from PyQt5.QtCore import Qt
 
 
 # TODO КОМЕНТАРИИ, БЛ@#*!
@@ -14,6 +13,8 @@ class FirstForm(QMainWindow):
     def __init__(self):
         super().__init__()
         self.initUI()
+        self.test = ''
+        self.fii = ''
 
     def initUI(self):
         self.setGeometry(250, 200, 400, 350)
@@ -102,11 +103,12 @@ class FirstForm(QMainWindow):
         self.sname = self.name_inputsn.text()
         self.fname = self.name_inputfn.text()
         self.fii = str(self.sname + ' ' + self.name + ' ' + self.fname)
-        con = sqlite3.connect("names.sqlite")
-        cur = con.cursor()
-        cur.execute(f'INSERT INTO name(fio) VALUES("{self.fii}")')
-        con.commit()
-        con.close()
+        if self.fii:
+            con = sqlite3.connect("names.sqlite")
+            cur = con.cursor()
+            cur.execute(f'INSERT INTO name(fio) VALUES("{self.fii}")')
+            con.commit()
+            con.close()
 
     def yan(self):
         self.test = str('Яндекс.Лицей')
@@ -117,18 +119,18 @@ class FirstForm(QMainWindow):
     def nach(self):
         self.test = 'Природа'
 
-    # TODO согласование с клавиатурой 'enter'
-
     def open_second_form(self):
         ts = self.test
         fi = self.fii
-        con = sqlite3.connect("names.sqlite")
-        cur = con.cursor()
-        cur.execute(f"INSERT INTO tests(test, fi) SELECT '{ts}', id FROM name WHERE fio = '{fi}'")
-        con.commit()
-        con.close()
-        self.second_form = SecondForm(self.fii, self.test)
-        self.second_form.show()
+        if self.test:
+            if self.fii:
+                con = sqlite3.connect("names.sqlite")
+                cur = con.cursor()
+                cur.execute(f"INSERT INTO tests(test, fi) SELECT '{ts}', id FROM name WHERE fio = '{fi}'")
+                con.commit()
+                con.close()
+                self.second_form = SecondForm(self.fii, self.test)
+                self.second_form.show()
 
 
 class SecondForm(QWidget):
@@ -241,8 +243,6 @@ class SecondForm(QWidget):
         self.btn1.resize(self.btn.sizeHint())
         self.btn1.move(200, 300)
         self.btn1.clicked.connect(self.open_tr_form)
-
-    # TODO 'enter' на клавиатуре
 
     def questh(self):
         self.btn.setText('NEXT')
@@ -429,6 +429,20 @@ class TrForm(QWidget):
         self.label5.adjustSize()
         self.label5.move(200, 100)
 
+        self.pixmap1 = QPixmap("Поздравление")
+        self.image = QLabel(self)
+        self.image.move(150, 150)
+        self.image.resize(250, 200)
+        self.image.setPixmap(self.pixmap1)
+
+        self.btn1 = QPushButton('Остальные\nучастники', self)
+        font = QFont("Times", 10, QFont.Bold)
+        self.btn1.setFont(font)
+        self.btn1.resize(self.btn.sizeHint())
+        self.btn1.adjustSize()
+        self.btn1.move(40, 300)
+        self.btn1.clicked.connect(self.open_qtr_form)
+
     def itg(self):
         vv = str(self.n) + '%'
         self.label2.setText(f"{vv}")
@@ -446,6 +460,106 @@ class TrForm(QWidget):
     def all(self):
         self.label5.setText(f"{self.aaaa}")
         self.label5.adjustSize()
+
+    def open_qtr_form(self):
+        self.qtr_form = QtrForm()
+        self.qtr_form.show()
+
+
+class QtrForm(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+    def initUI(self):
+        self.setGeometry(600, 200, 400, 350)
+        self.setWindowTitle('Все участники:')
+        self.lbl = QLabel(self)
+        self.lbl.adjustSize()
+
+        self.pixmap = QPixmap("фон1")
+        self.image = QLabel(self)
+        self.image.move(0, 0)
+        self.image.resize(700, 450)
+        self.image.setPixmap(self.pixmap)
+
+        self.label = QLabel(self)
+        self.label.setFont(QFont("Times", 14, QFont.Bold))
+        self.label.setText("Приветитки)")
+        self.label.adjustSize()
+        self.label.move(40, 20)
+
+        self.label = QLabel(self)
+        self.label.setFont(QFont("Times", 12, QFont.Bold))
+        self.label.setText("О ком хочешь узнать?")
+        self.label.adjustSize()
+        self.label.move(40, 50)
+
+        self.name_label = QLabel(self)
+        self.name_label.setFont(QFont("Times", 10, QFont.Bold))
+        self.name_label.setText("Фамилия: ")
+        self.name_label.adjustSize()
+        self.name_label.move(40, 80)
+
+        self.name_inputsn = QLineEdit(self)
+        self.name_inputsn.move(150, 80)
+
+        self.name_label = QLabel(self)
+        self.name_label.setFont(QFont("Times", 10, QFont.Bold))
+        self.name_label.setText("Имя: ")
+        self.name_label.adjustSize()
+        self.name_label.move(40, 110)
+
+        self.name_inputn = QLineEdit(self)
+        self.name_inputn.move(150, 110)
+
+        self.name_label = QLabel(self)
+        self.name_label.setFont(QFont("Times", 10, QFont.Bold))
+        self.name_label.setText("Отчество: ")
+        self.name_label.adjustSize()
+        self.name_label.move(40, 140)
+
+        self.name_inputfn = QLineEdit(self)
+        self.name_inputfn.move(150, 140)
+
+        self.btn = QPushButton('Лицезреть>', self)
+        font = QFont("Times", 10, QFont.Bold)
+        self.btn.setFont(font)
+        self.btn.resize(self.btn.sizeHint())
+        self.btn.adjustSize()
+        self.btn.move(40, 170)
+        self.btn.clicked.connect(self.infa)
+
+        self.name_label5 = QLabel(self)
+        self.name_label5.setFont(QFont("Times", 12, QFont.Bold))
+        self.name_label5.setText(" ")
+        self.name_label5.adjustSize()
+        self.name_label5.move(40, 200)
+
+    def infa(self):
+        self.name = self.name_inputn.text()
+        self.sname = self.name_inputsn.text()
+        self.fname = self.name_inputfn.text()
+        self.fii = str(self.sname + ' ' + self.name + ' ' + self.fname)
+        fi = self.fii
+        if fi:
+            con = sqlite3.connect("names.sqlite")
+            cur = con.cursor()
+            result = cur.execute(
+                f"SELECT test, ress FROM tests WHERE fi = (SELECT id FROM name WHERE fio = '{fi}')").fetchall()
+            llis = []
+            for i in set(result):
+                llis.append('\t'.join(list(i)))
+            self.aaaa = ''
+            for i in llis:
+                self.aaaa += i
+                self.aaaa += '\n'
+
+            self.name_label5.setText(f"{self.aaaa}")
+            self.name_label5.adjustSize()
+        if fi == '':
+            self.name_label5.setText(f"Введите информацию")
+            self.name_label5.adjustSize()
 
 
 if __name__ == '__main__':

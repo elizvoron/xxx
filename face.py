@@ -9,14 +9,14 @@ import sqlite3
 # TODO КОМЕНТАРИИ, БЛ@#*!
 
 
-class FirstForm(QMainWindow):
+class FirstForm(QMainWindow):   #Первый класс, выводящий первое окно.
     def __init__(self):
         super().__init__()
         self.initUI()
-        self.test = ''
-        self.fii = ''
+        self.test = False
+        self.fii = False
 
-    def initUI(self):
+    def initUI(self):   #Структура первого окна.
         self.setGeometry(250, 200, 400, 350)
         self.setWindowTitle('Знакомство с человечком)')
 
@@ -98,7 +98,7 @@ class FirstForm(QMainWindow):
         self.btn3.move(175, 240)
         self.btn3.clicked.connect(self.yan)
 
-    def hello(self):
+    def hello(self):    #Обработка "ОК", проверка на введённые данные.
         self.name = self.name_inputn.text()
         self.sname = self.name_inputsn.text()
         self.fname = self.name_inputfn.text()
@@ -110,7 +110,7 @@ class FirstForm(QMainWindow):
             con.commit()
             con.close()
 
-    def yan(self):
+    def yan(self):  #Выбор теста
         self.test = str('Яндекс.Лицей')
 
     def mat(self):
@@ -119,21 +119,26 @@ class FirstForm(QMainWindow):
     def nach(self):
         self.test = 'Природа'
 
-    def open_second_form(self):
+    def open_second_form(self): #Открытие второго окна и добавление информации в базу данных.
         ts = self.test
-        fi = self.fii
-        if self.test:
-            if self.fii:
-                con = sqlite3.connect("names.sqlite")
-                cur = con.cursor()
-                cur.execute(f"INSERT INTO tests(test, fi) SELECT '{ts}', id FROM name WHERE fio = '{fi}'")
-                con.commit()
-                con.close()
-                self.second_form = SecondForm(self.fii, self.test)
-                self.second_form.show()
+        if self.fii:
+            if self.fii != '  ':
+                fi = self.fii
+            else:
+                fi = False
+        if fi and ts:
+            con = sqlite3.connect("names.sqlite")
+            cur = con.cursor()
+            cur.execute(f"INSERT INTO tests(test, fi) SELECT '{ts}', id FROM name WHERE fio = '{fi}'")
+            con.commit()
+            con.close()
+            self.second_form = SecondForm(self.fii, self.test)
+            self.second_form.show()
+            self.close()
 
 
-class SecondForm(QWidget):
+
+class SecondForm(QWidget):  #Второе окно с вопросамии и вводом ответа.
     def __init__(self, a, b):
         super().__init__()
         self.initUI()
@@ -141,7 +146,7 @@ class SecondForm(QWidget):
         self.tst = b
         self.num = 0
         self.answers = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        if b == 'Математика':
+        if b == 'Математика':   #Вывод вопросов из текстового файла.
             ts = open('ts_math.txt', encoding="utf8", mode='r').read().split('\n')
             self.quest = []
             self.answ = []
@@ -166,7 +171,7 @@ class SecondForm(QWidget):
                 self.quest.append(a[0])
                 self.answ.append(a[-1])
 
-    def initUI(self):
+    def initUI(self):   #Структура окна 2.
         self.setGeometry(600, 200, 700, 350)
         self.setWindowTitle('ТЕСТ')
         self.lbl = QLabel(self)
@@ -244,7 +249,7 @@ class SecondForm(QWidget):
         self.btn1.move(200, 300)
         self.btn1.clicked.connect(self.open_tr_form)
 
-    def questh(self):
+    def questh(self):   #Реагирование на нажатие кнопки, смена текста, анализ ответа, исключение ошибочного ввода.
         self.btn.setText('NEXT')
         self.btn.resize(self.btn.sizeHint())
         a = self.ainput.text()
@@ -326,6 +331,7 @@ class SecondForm(QWidget):
     def open_tr_form(self):
         self.tr_form = TrForm(self.answers, self.answ, self.tst, self.fio)
         self.tr_form.show()
+        self.close()
 
 
 class TrForm(QWidget):
@@ -557,10 +563,13 @@ class QtrForm(QWidget):
 
             self.name_label5.setText(f"{self.aaaa}")
             self.name_label5.adjustSize()
-        if fi == '':
+        if not fi:
             self.name_label5.setText(f"Введите информацию")
             self.name_label5.adjustSize()
 
+    def keyPressEvent(self, event):
+        if event.key() == 16777220:
+            self.infa()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

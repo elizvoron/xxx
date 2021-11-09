@@ -9,14 +9,14 @@ import sqlite3
 # TODO КОМЕНТАРИИ!
 
 
-class FirstForm(QMainWindow):   #Первый класс, выводящий первое окно.
+class FirstForm(QMainWindow):  # Первый класс, выводящий первое окно.
     def __init__(self):
         super().__init__()
         self.initUI()
         self.test = False
         self.fii = False
 
-    def initUI(self):   #Структура первого окна.
+    def initUI(self):  # Структура первого окна.
         self.setGeometry(250, 200, 400, 350)
         self.setWindowTitle('Знакомство с человечком)')
 
@@ -98,7 +98,7 @@ class FirstForm(QMainWindow):   #Первый класс, выводящий п�
         self.btn3.move(175, 240)
         self.btn3.clicked.connect(self.yan)
 
-    def hello(self):    #Обработка "ОК", проверка на введённые данные.
+    def hello(self):  # Обработка "ОК", проверка на введённые данные.
         self.name = self.name_inputn.text()
         self.sname = self.name_inputsn.text()
         self.fname = self.name_inputfn.text()
@@ -110,7 +110,7 @@ class FirstForm(QMainWindow):   #Первый класс, выводящий п�
             con.commit()
             con.close()
 
-    def yan(self):  #Выбор теста
+    def yan(self):  # Выбор теста
         self.test = str('Яндекс.Лицей')
 
     def mat(self):
@@ -119,7 +119,7 @@ class FirstForm(QMainWindow):   #Первый класс, выводящий п�
     def nach(self):
         self.test = 'Природа'
 
-    def open_second_form(self): #Открытие второго окна и добавление информации в базу данных.
+    def open_second_form(self):  # Открытие второго окна и добавление информации в базу данных.
         ts = self.test
         if self.fii:
             if self.fii != '  ':
@@ -134,11 +134,10 @@ class FirstForm(QMainWindow):   #Первый класс, выводящий п�
             con.close()
             self.second_form = SecondForm(self.fii, self.test)
             self.second_form.show()
-            self.close()
+            self.close()    #Закрытие первого окна.
 
 
-
-class SecondForm(QWidget):  #Второе окно с вопросамии и вводом ответа.
+class SecondForm(QWidget):  # Второе окно с вопросамии и вводом ответа.
     def __init__(self, a, b):
         super().__init__()
         self.initUI()
@@ -146,7 +145,7 @@ class SecondForm(QWidget):  #Второе окно с вопросамии и в
         self.tst = b
         self.num = 0
         self.answers = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        if b == 'Математика':   #Вывод вопросов из текстового файла.
+        if b == 'Математика':  # Вывод вопросов из текстового файла.
             ts = open('ts_math.txt', encoding="utf8", mode='r').read().split('\n')
             self.quest = []
             self.answ = []
@@ -171,7 +170,7 @@ class SecondForm(QWidget):  #Второе окно с вопросамии и в
                 self.quest.append(a[0])
                 self.answ.append(a[-1])
 
-    def initUI(self):   #Структура окна 2.
+    def initUI(self):  # Структура окна 2.
         self.setGeometry(600, 200, 700, 350)
         self.setWindowTitle('ТЕСТ')
         self.lbl = QLabel(self)
@@ -249,7 +248,7 @@ class SecondForm(QWidget):  #Второе окно с вопросамии и в
         self.btn1.move(200, 300)
         self.btn1.clicked.connect(self.open_tr_form)
 
-    def questh(self):   #Реагирование на нажатие кнопки, смена текста, анализ ответа, исключение ошибочного ввода.
+    def questh(self):  # Реагирование на нажатие кнопки, смена текста, анализ ответа, исключение ошибочного ввода.
         self.btn.setText('NEXT')
         self.btn.resize(self.btn.sizeHint())
         a = self.ainput.text()
@@ -288,7 +287,7 @@ class SecondForm(QWidget):  #Второе окно с вопросамии и в
             self.num += 1
             self.ainput.setText(f"")
 
-    def keyPressEvent(self, event):
+    def keyPressEvent(self, event):    #Работа enter во время ввода ответов.
         if event.key() == 16777220:
             self.btn.setText('NEXT')
             self.btn.resize(self.btn.sizeHint())
@@ -328,13 +327,13 @@ class SecondForm(QWidget):  #Второе окно с вопросамии и в
                 self.ainput.setText(f"")
                 self.answers[self.num - 1] = a
 
-    def open_tr_form(self):
+    def open_tr_form(self):    #Открытие третьего окна + закрытие второго.
         self.tr_form = TrForm(self.answers, self.answ, self.tst, self.fio)
         self.tr_form.show()
         self.close()
 
 
-class TrForm(QWidget):
+class TrForm(QWidget):  #Третье окно.
     def __init__(self, a, b, tst, fio):
         super().__init__()
         self.initUI()
@@ -359,7 +358,7 @@ class TrForm(QWidget):
             f"UPDATE tests SET ress = {self.n} WHERE test = '{ts}' AND fi = (SELECT id FROM name WHERE fio = '{fi}')")
         con.commit()
         con.close()
-
+            #Занос результатов в базу данных.
         fi = self.fio
         con = sqlite3.connect("names.sqlite")
         cur = con.cursor()
@@ -371,9 +370,9 @@ class TrForm(QWidget):
         self.aaaa = ''
         for i in llis:
             self.aaaa += i
-            self.aaaa += '\n'
+            self.aaaa += '\n'   #Создание строки для вывода результата.
 
-    def initUI(self):
+    def initUI(self):   #Структура окна три.
         self.setGeometry(600, 200, 400, 350)
         self.setWindowTitle('ИТОГ')
         self.lbl = QLabel(self)
@@ -449,7 +448,7 @@ class TrForm(QWidget):
         self.btn1.move(40, 300)
         self.btn1.clicked.connect(self.open_qtr_form)
 
-    def itg(self):
+    def itg(self):  #Вывод окончательных итогов решения теста.
         vv = str(self.n) + '%'
         self.label2.setText(f"{vv}")
         self.label2.adjustSize()
@@ -463,21 +462,21 @@ class TrForm(QWidget):
         self.label4.setText(f"{innnn}")
         self.label4.adjustSize()
 
-    def all(self):
+    def all(self):  #Вывод общей статистики по используемому ФИО.
         self.label5.setText(f"{self.aaaa}")
         self.label5.adjustSize()
 
-    def open_qtr_form(self):
+    def open_qtr_form(self):    #Открытие четвёртого окна.
         self.qtr_form = QtrForm()
         self.qtr_form.show()
 
 
-class QtrForm(QWidget):
+class QtrForm(QWidget): #Четвёртое окно.
     def __init__(self):
         super().__init__()
         self.initUI()
 
-    def initUI(self):
+    def initUI(self):   #Общая структура окна четыре.
         self.setGeometry(600, 200, 400, 350)
         self.setWindowTitle('Все участники:')
         self.lbl = QLabel(self)
@@ -542,7 +541,7 @@ class QtrForm(QWidget):
         self.name_label5.adjustSize()
         self.name_label5.move(40, 200)
 
-    def infa(self):
+    def infa(self): #Вывод статистики по введённому ФИО.
         self.name = self.name_inputn.text()
         self.sname = self.name_inputsn.text()
         self.fname = self.name_inputfn.text()
@@ -563,13 +562,14 @@ class QtrForm(QWidget):
 
             self.name_label5.setText(f"{self.aaaa}")
             self.name_label5.adjustSize()
-        if not fi:
+        if not fi or fi == '  ':
             self.name_label5.setText(f"Введите информацию")
             self.name_label5.adjustSize()
 
-    def keyPressEvent(self, event):
+    def keyPressEvent(self, event): #Работа клавиши enter.
         if event.key() == 16777220:
             self.infa()
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

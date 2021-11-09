@@ -6,7 +6,7 @@ from PyQt5.QtGui import QPixmap, QFont
 import sqlite3
 
 
-# TODO КОМЕНТАРИИ, БЛ@#*!
+# TODO КОМЕНТАРИИ!
 
 
 class FirstForm(QMainWindow):   #Первый класс, выводящий первое окно.

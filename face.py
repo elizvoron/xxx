@@ -364,13 +364,19 @@ class TrForm(QWidget):  #Третье окно.
         cur = con.cursor()
         result = cur.execute(
             f"SELECT test, ress FROM tests WHERE fi = (SELECT id FROM name WHERE fio = '{fi}')").fetchall()
-        llis = []
+        llis = []   #Создание строки для вывода результата.
+        llis1 = []
         for i in set(result):
-            llis.append('\t'.join(list(i)))
+            llis.append(list(i)[0])
+            llis1.append(list(i)[-1])
         self.aaaa = ''
+        self.bbbb = ''
         for i in llis:
             self.aaaa += i
-            self.aaaa += '\n'   #Создание строки для вывода результата.
+            self.aaaa += '\n'
+        for i in llis1:
+            self.bbbb += i
+            self.bbbb += '\n'
 
     def initUI(self):   #Структура окна три.
         self.setGeometry(600, 200, 400, 350)
@@ -434,6 +440,12 @@ class TrForm(QWidget):  #Третье окно.
         self.label5.adjustSize()
         self.label5.move(200, 100)
 
+        self.label6 = QLabel(self)
+        self.label6.setFont(QFont("Times", 10, QFont.Bold))
+        self.label6.setText(f" ")
+        self.label6.adjustSize()
+        self.label6.move(320, 100)
+
         self.pixmap1 = QPixmap("Поздравление")
         self.image = QLabel(self)
         self.image.move(150, 150)
@@ -465,6 +477,9 @@ class TrForm(QWidget):  #Третье окно.
     def all(self):  #Вывод общей статистики по используемому ФИО.
         self.label5.setText(f"{self.aaaa}")
         self.label5.adjustSize()
+
+        self.label6.setText(f"{self.bbbb}")
+        self.label6.adjustSize()
 
     def open_qtr_form(self):    #Открытие четвёртого окна.
         self.qtr_form = QtrForm()
@@ -541,6 +556,12 @@ class QtrForm(QWidget): #Четвёртое окно.
         self.name_label5.adjustSize()
         self.name_label5.move(40, 200)
 
+        self.label6 = QLabel(self)
+        self.label6.setFont(QFont("Times", 12, QFont.Bold))
+        self.label6.setText(f" ")
+        self.label6.adjustSize()
+        self.label6.move(200, 200)
+
     def infa(self): #Вывод статистики по введённому ФИО.
         self.name = self.name_inputn.text()
         self.sname = self.name_inputsn.text()
@@ -553,15 +574,25 @@ class QtrForm(QWidget): #Четвёртое окно.
             result = cur.execute(
                 f"SELECT test, ress FROM tests WHERE fi = (SELECT id FROM name WHERE fio = '{fi}')").fetchall()
             llis = []
+            llis1 = []
             for i in set(result):
-                llis.append('\t'.join(list(i)))
+                llis.append(list(i)[0])
+                llis1.append(list(i)[-1])
             self.aaaa = ''
+            self.bbbb = ''
             for i in llis:
                 self.aaaa += i
                 self.aaaa += '\n'
+            for i in llis1:
+                self.bbbb += i
+                self.bbbb += '\n'
 
             self.name_label5.setText(f"{self.aaaa}")
             self.name_label5.adjustSize()
+
+            self.label6.setText(f"{self.bbbb}")
+            self.label6.adjustSize()
+
         if not fi or fi == '  ':
             self.name_label5.setText(f"Введите информацию")
             self.name_label5.adjustSize()

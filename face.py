@@ -6,9 +6,6 @@ from PyQt5.QtGui import QPixmap, QFont
 import sqlite3
 
 
-# TODO КОМЕНТАРИИ!
-
-
 class FirstForm(QMainWindow):  # Первый класс, выводящий первое окно.
     def __init__(self):
         super().__init__()
